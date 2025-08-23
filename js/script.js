@@ -941,4 +941,3 @@ function initPlayStoreCards() {
 
 // Initialize Play Store cards
 document.addEventListener('DOMContentLoaded', initPlayStoreCards);
-
