@@ -206,7 +206,6 @@ function createCyberLoader() {
 
 // Initialize all effects
 window.addEventListener('load', () => {
-    createEnhancedLoader();
     addWordGlowStyle();
     initMatrixRain();
     createAdvancedParticles();
@@ -744,7 +743,6 @@ createMouseTrail();
 function initPerformanceMonitoring() {
     window.addEventListener('load', () => {
         const loadTime = performance.now();
-        console.log(`🚀 Wilian Software loaded in ${loadTime.toFixed(2)}ms`);
     });
 }
 
@@ -796,4 +794,151 @@ document.querySelectorAll('.download-card').forEach(card => {
     });
 });
 
-console.log('🔥 Wilian Software - Cyber Edition loaded successfully! 🚀');
+
+// Show More/Less Functionality
+function initShowMoreButtons() {
+    // Todas as seções com botões "Ver mais"
+    const buttons = [
+        { id: 'show-more-os', grid: '#sistema-operacional .downloads-grid' },
+        { id: 'show-more-office', grid: '#office .downloads-grid' },
+        { id: 'show-more-drivers', grid: '#drivers .downloads-grid' },
+        { id: 'show-more-programas', grid: '#programas .downloads-grid' },
+        { id: 'show-more-apks', grid: '#android-grid' },
+        { id: 'show-more-playstore', grid: '#playstore-grid' }
+    ];
+    
+    buttons.forEach(buttonConfig => {
+        const button = document.getElementById(buttonConfig.id);
+        
+        if (button) {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Find all hidden cards in this section
+                const hiddenCards = document.querySelectorAll(`${buttonConfig.grid} .hidden-content`);
+                const isExpanded = this.classList.contains('expanded');
+                
+                if (isExpanded) {
+                    // Hide content
+                    hiddenCards.forEach(card => {
+                        card.classList.remove('show');
+                        setTimeout(() => {
+                            card.style.display = 'none';
+                        }, 500);
+                    });
+                    this.classList.remove('expanded');
+                    
+                    // Update button text based on section
+                    const buttonTexts = {
+                        'show-more-os': 'Ver Mais Sistemas',
+                        'show-more-office': 'Ver Mais Office',
+                        'show-more-drivers': 'Ver Mais Drivers',
+                        'show-more-programas': 'Ver Mais Programas',
+                        'show-more-apks': 'Ver Mais APKs',
+                        'show-more-playstore': 'Ver Mais Aplicativos'
+                    };
+                    
+                    this.querySelector('.btn-text').innerHTML = `<i class="fas fa-chevron-down"></i> ${buttonTexts[buttonConfig.id]}`;
+                    
+                    // Smooth scroll to button after collapse
+                    setTimeout(() => {
+                        this.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'center' 
+                        });
+                    }, 300);
+                    
+                } else {
+                    // Show content
+                    hiddenCards.forEach((card, index) => {
+                        card.style.display = 'block';
+                        setTimeout(() => {
+                            card.classList.add('show');
+                        }, index * 100);
+                    });
+                    this.classList.add('expanded');
+                    
+                    // Update button text based on section
+                    const buttonTextsExpanded = {
+                        'show-more-os': 'Ver Menos Sistemas',
+                        'show-more-office': 'Ver Menos Office',
+                        'show-more-drivers': 'Ver Menos Drivers',
+                        'show-more-programas': 'Ver Menos Programas',
+                        'show-more-apks': 'Ver Menos APKs',
+                        'show-more-playstore': 'Ver Menos Aplicativos'
+                    };
+                    
+                    this.querySelector('.btn-text').innerHTML = `<i class="fas fa-chevron-up"></i> ${buttonTextsExpanded[buttonConfig.id]}`;
+                }
+            });
+        }
+    });
+}
+
+// Initialize show more buttons when DOM is loaded
+document.addEventListener('DOMContentLoaded', initShowMoreButtons);
+
+// Re-initialize if content is dynamically added
+const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+        if (mutation.addedNodes.length > 0) {
+            mutation.addedNodes.forEach(function(node) {
+                if (node.nodeType === 1 && node.querySelector('.btn-show-more')) {
+                    initShowMoreButtons();
+                }
+            });
+        }
+    });
+});
+
+observer.observe(document.body, {
+    childList: true,
+    subtree: true
+});
+
+// Play Store App Card Interactions
+function initPlayStoreCards() {
+    const playStoreCards = document.querySelectorAll('.playstore-card');
+    
+    playStoreCards.forEach(card => {
+        // Add keyboard navigation
+        card.setAttribute('tabindex', '0');
+        
+        // Enhanced hover effects
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-10px) scale(1.02)';
+            this.style.zIndex = '10';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+            this.style.zIndex = '1';
+        });
+        
+        // Keyboard interaction
+        card.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                const downloadLink = this.querySelector('a[href*="play.google.com"]');
+                if (downloadLink) {
+                    window.open(downloadLink.href, '_blank');
+                }
+            }
+        });
+        
+        // Click to download
+        card.addEventListener('click', function(e) {
+            // Don't trigger if clicking on the actual link
+            if (!e.target.closest('a')) {
+                const downloadLink = this.querySelector('a[href*="play.google.com"]');
+                if (downloadLink) {
+                    window.open(downloadLink.href, '_blank');
+                }
+            }
+        });
+    });
+}
+
+// Initialize Play Store cards
+document.addEventListener('DOMContentLoaded', initPlayStoreCards);
+
